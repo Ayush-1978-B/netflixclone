@@ -27,6 +27,36 @@ function App() {
               <Route path="/signup" element={<Signup />} />
               <Route path="/profile" element={<Profile />} />
             </Routes>
+            <div style={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              width: '100%',
+              background: 'rgba(0,0,0,0.85)',
+              color: '#e50914',
+              fontWeight: 700,
+              fontSize: '1.1rem',
+              zIndex: 2000,
+              overflow: 'hidden',
+              height: '36px',
+              display: 'flex',
+              alignItems: 'center',
+            }}>
+              <div style={{
+                whiteSpace: 'nowrap',
+                display: 'inline-block',
+                animation: 'marquee 12s linear infinite',
+                paddingLeft: '100%',
+              }}>
+                 NetflixClone is designed by Ayush Yadav &nbsp; • &nbsp; This NetflixClone is designed by Ayush Yadav &nbsp; • &nbsp; This NetflixClone is designed by Ayush Yadav NetflixClone is designed by Ayush Yadav &nbsp; • &nbsp; NetflixClone is designed by Ayush Yadav &nbsp; • &nbsp;
+              </div>
+              <style>{`
+                @keyframes marquee {
+                  0% { transform: translateX(0); }
+                  100% { transform: translateX(-100%); }
+                }
+              `}</style>
+            </div>
           </div>
         </Router>
       </MovieProvider>

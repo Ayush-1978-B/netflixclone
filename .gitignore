@@ -9,9 +9,12 @@ lerna-debug.log*
 .firebase
 .github
 .firebaserc
-.gitignore
+
 firebase.json
 Configuration.md
+eslint.config.js
+
+
 node_modules
 dist
 dist-ssr

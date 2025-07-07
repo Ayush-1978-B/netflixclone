@@ -13,7 +13,7 @@ export function MovieProvider({ children }) {
   const [upcoming, setUpcoming] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API_KEY = 'ee5f6d7a5cf13ff7b5c0fb3da6de1136'; // Replace with your TMDB API key
+  const API_KEY = import.meta.env.VITE_TMDB_API_KEY || 'YOUR_TMDB_API_KEY_HERE';
   const BASE_URL = 'https://api.themoviedb.org/3';
 
   const fetchMovies = async (endpoint) => {
@@ -52,6 +52,12 @@ export function MovieProvider({ children }) {
   useEffect(() => {
     const loadMovies = async () => {
       setLoading(true);
+      
+      if (API_KEY === 'YOUR_TMDB_API_KEY_HERE') {
+        console.error('TMDB API key not configured. Please add your API key to src/contexts/MovieContext.jsx');
+        setLoading(false);
+        return;
+      }
       
       const [trendingData, topRatedData, popularData, upcomingData] = await Promise.all([
         fetchMovies('/trending/movie/week'),

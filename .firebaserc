@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "netflixclone-e619c"
-  }
+    "default": "netflixclone-e619c",
+    "echo": "netflixclone-e619c"
+  },
+  "targets": {},
+  "etags": {}
 }

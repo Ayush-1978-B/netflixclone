@@ -12,6 +12,7 @@ import Profile from './pages/Profile';
 import TrailerPopup from './components/TrailerPopup';
 import { GlobalStyles } from './styles/GlobalStyles';
 import { useMovies } from './contexts/MovieContext';
+import { useDocumentTitle } from './hooks/useDocumentTitle';
 
 const TrailerPopupWrapper = () => {
   const { showTrailerPopup, selectedTrailer, closeTrailerPopup } = useMovies();
@@ -26,6 +27,8 @@ const TrailerPopupWrapper = () => {
 };
 
 function App() {
+  useDocumentTitle();
+  
   return (
     <AuthProvider>
       <MovieProvider>

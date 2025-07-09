@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useMovies } from '../contexts/MovieContext';
 import { FaPlay, FaPlus, FaInfoCircle, FaStar, FaClock, FaCalendar } from 'react-icons/fa';
+import { useCustomTitle } from '../hooks/useDocumentTitle';
 
 const DetailContainer = styled.div`
   min-height: 100vh;
@@ -327,6 +328,10 @@ function MovieDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [trailerLoading, setTrailerLoading] = useState(false);
+  const [pageTitle, setPageTitle] = useState('Loading... - Netflix Clone');
+
+  // Use custom title hook
+  useCustomTitle(pageTitle);
 
   useEffect(() => {
     const loadMovie = async () => {
@@ -336,12 +341,16 @@ function MovieDetail() {
         const movieData = await fetchMovieDetails(id);
         if (movieData) {
           setMovie(movieData);
+          // Set dynamic title for movie details
+          setPageTitle(`${movieData.title} (${movieData.year}) - Netflix Clone`);
         } else {
           setError('Movie not found');
+          setPageTitle('Movie Not Found - Netflix Clone');
         }
       } catch (err) {
         console.error('Error loading movie:', err);
         setError('Failed to load movie details');
+        setPageTitle('Error - Netflix Clone');
       } finally {
         setLoading(false);
       }

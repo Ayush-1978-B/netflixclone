@@ -178,6 +178,27 @@ const AuthButton = styled(Link)`
   }
 `;
 
+const LoginIconButton = styled(Link)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #222;
+  color: #fff;
+  font-size: 1.3rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-left: 0.5rem;
+  text-decoration: none;
+  &:hover, &:focus {
+    background: #e50914;
+    color: #fff;
+  }
+`;
+
 function Navbar() {
   const { currentUser, logout } = useAuth();
   const location = useLocation();
@@ -254,10 +275,12 @@ function Navbar() {
               </UserMenu>
             </>
           ) : (
-            <AuthButtons>
-              <AuthButton to="/login" className="signin">Sign In</AuthButton>
-              <AuthButton to="/signup" className="signup">Sign Up</AuthButton>
-            </AuthButtons>
+            <>
+              {/* Hide text buttons, show only icon for login */}
+              <LoginIconButton to="/login" title="Sign In">
+                <FaUser />
+              </LoginIconButton>
+            </>
           )}
 
           <MobileMenuButton>

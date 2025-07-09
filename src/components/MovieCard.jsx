@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
@@ -214,16 +214,38 @@ const AddToListButton = styled.button`
 `;
 
 function MovieCard({ movie, isSearchResult = false }) {
-  const { playTrailer } = useMovies();
+  const { playTrailer, searchTrailer } = useMovies();
   const [isInList, setIsInList] = useState(false);
   const [trailerLoading, setTrailerLoading] = useState(false);
-  
+  const [trailerUrl, setTrailerUrl] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
   const imageUrl = movie.poster_path || null;
+
+  useEffect(() => {
+    // Detect mobile device
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    // On mobile, fetch trailer link on mount
+    if (isMobile && !trailerUrl) {
+      (async () => {
+        const trailer = await searchTrailer(movie.title, movie.year);
+        setTrailerUrl(trailer ? trailer.url : null);
+      })();
+    }
+    // eslint-disable-next-line
+  }, [isMobile, movie.title, movie.year]);
 
   const handleAddToList = (e) => {
     e.stopPropagation();
     setIsInList(!isInList);
-
   };
 
   const handleTrailerClick = async (e) => {
@@ -237,6 +259,14 @@ function MovieCard({ movie, isSearchResult = false }) {
       } finally {
         setTrailerLoading(false);
       }
+    }
+  };
+
+  const handleMobilePlay = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (trailerUrl) {
+      window.open(trailerUrl, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -257,11 +287,14 @@ function MovieCard({ movie, isSearchResult = false }) {
       whileHover={{ scale: 1.05 }}
       transition={{ duration: 0.3 }}
     >
-      <Link to={`/movie/${movie.id}`}>
+      <Link to={`/movie/${movie.id}`}
+        style={{ position: 'relative', display: 'block' }}
+      >
         {imageUrl ? (
           <MovieImage 
             src={imageUrl} 
             alt={movie.title}
+            style={{ filter: isMobile && trailerUrl ? 'brightness(0.7)' : undefined }}
           />
         ) : (
           <PlaceholderImage>
@@ -271,75 +304,108 @@ function MovieCard({ movie, isSearchResult = false }) {
             </div>
           </PlaceholderImage>
         )}
+        {/* Mobile Play Overlay */}
+        {isMobile && trailerUrl && (
+          <div
+            onClick={handleMobilePlay}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 2,
+              cursor: 'pointer',
+              background: 'rgba(0,0,0,0.15)',
+            }}
+          >
+            <FaPlay style={{
+              fontSize: '2.5rem',
+              color: '#fff',
+              background: 'rgba(0,0,0,0.5)',
+              borderRadius: '50%',
+              padding: '0.7rem',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            }} />
+          </div>
+        )}
       </Link>
 
+      {/* Add to List button always visible on mobile */}
       <AddToListButton
         onClick={handleAddToList}
         className={isInList ? 'added' : ''}
         title={isInList ? 'Remove from list' : 'Add to list'}
+        style={isMobile ? { opacity: 1, zIndex: 3 } : {}}
       >
         {isInList ? <FaCheck /> : <FaPlus />}
       </AddToListButton>
 
-      <HoverOverlay
-        initial={{ opacity: 0 }}
-        whileHover={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <TopActions>
-          <ActionButton 
-            className="play" 
-            title="Play Trailer"
-            onClick={handleTrailerClick}
-            disabled={trailerLoading}
-          >
-            <FaPlay />
-          </ActionButton>
-          <ActionButton title="More info">
-            <FaInfoCircle />
-          </ActionButton>
-        </TopActions>
+      {/* Desktop Hover Overlay */}
+      {!isMobile && (
+        <HoverOverlay
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <TopActions>
+            <ActionButton 
+              className="play" 
+              title="Play Trailer"
+              onClick={handleTrailerClick}
+              disabled={trailerLoading}
+            >
+              <FaPlay />
+            </ActionButton>
+            <ActionButton title="More info">
+              <FaInfoCircle />
+            </ActionButton>
+          </TopActions>
 
-        <MovieInfo>
-          <MovieTitle>{movie.title}</MovieTitle>
-          <MovieMeta>
-            <Rating style={{ color: getRatingColor(movie.vote_average) }}>
-              {movie.vote_average.toFixed(1)} ★
-            </Rating>
-            {movie.release_date && (
-              <span>{new Date(movie.release_date).getFullYear()}</span>
+          <MovieInfo>
+            <MovieTitle>{movie.title}</MovieTitle>
+            <MovieMeta>
+              <Rating style={{ color: getRatingColor(movie.vote_average) }}>
+                {movie.vote_average.toFixed(1)} ★
+              </Rating>
+              {movie.release_date && (
+                <span>{new Date(movie.release_date).getFullYear()}</span>
+              )}
+              {movie.runtime && (
+                <Duration>{formatDuration(movie.runtime)}</Duration>
+              )}
+            </MovieMeta>
+            {movie.overview && (
+              <p style={{ fontSize: '0.8rem', lineHeight: '1.3', color: '#b3b3b3' }}>
+                {movie.overview.length > 100 
+                  ? `${movie.overview.substring(0, 100)}...` 
+                  : movie.overview
+                }
+              </p>
             )}
-            {movie.runtime && (
-              <Duration>{formatDuration(movie.runtime)}</Duration>
-            )}
-          </MovieMeta>
-          {movie.overview && (
-            <p style={{ fontSize: '0.8rem', lineHeight: '1.3', color: '#b3b3b3' }}>
-              {movie.overview.length > 100 
-                ? `${movie.overview.substring(0, 100)}...` 
-                : movie.overview
-              }
-            </p>
-          )}
-        </MovieInfo>
+          </MovieInfo>
 
-        <BottomActions>
-          <BottomButton 
-            className="play"
-            onClick={handleTrailerClick}
-            disabled={trailerLoading}
-          >
-            <FaPlay /> {trailerLoading ? 'Loading...' : 'Play'}
-          </BottomButton>
-          <BottomButton 
-            className="info"
-            onClick={handleTrailerClick}
-            disabled={trailerLoading}
-          >
-            <FaInfoCircle /> {trailerLoading ? 'Loading...' : 'Trailer'}
-          </BottomButton>
-        </BottomActions>
-      </HoverOverlay>
+          <BottomActions>
+            <BottomButton 
+              className="play"
+              onClick={handleTrailerClick}
+              disabled={trailerLoading}
+            >
+              <FaPlay /> {trailerLoading ? 'Loading...' : 'Play'}
+            </BottomButton>
+            <BottomButton 
+              className="info"
+              onClick={handleTrailerClick}
+              disabled={trailerLoading}
+            >
+              <FaInfoCircle /> {trailerLoading ? 'Loading...' : 'Trailer'}
+            </BottomButton>
+          </BottomActions>
+        </HoverOverlay>
+      )}
     </CardContainer>
   );
 }

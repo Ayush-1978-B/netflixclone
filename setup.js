@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
+import fs from 'fs';
+import path from 'path';
+import readline from 'readline';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -90,7 +94,7 @@ ${answers.firebaseMeasurementId ? `VITE_FIREBASE_MEASUREMENT_ID=${answers.fireba
 VITE_YOUTUBE_API_KEY=${answers.youtubeApiKey}
 `;
 
-  const envPath = path.join(process.cwd(), '.env');
+  const envPath = path.join(__dirname, '.env');
   
   try {
     fs.writeFileSync(envPath, envContent);

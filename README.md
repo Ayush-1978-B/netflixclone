@@ -55,6 +55,14 @@ A modern, responsive Netflix clone built with React, featuring real movie data f
    ```
 
 3. **Set up Environment Variables**
+   
+   **Option A: Interactive Setup (Recommended)**
+   ```bash
+   npm run setup
+   ```
+   This will guide you through setting up all required environment variables.
+   
+   **Option B: Manual Setup**
    - Create a `.env` file in the root directory
    - Add the following environment variables:
    ```env
@@ -170,6 +178,7 @@ The app is fully responsive and optimized for:
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
+- `npm run setup` - Interactive environment setup
 
 ## 🌟 Features in Detail
 

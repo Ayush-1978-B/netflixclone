@@ -304,7 +304,7 @@ function Signup() {
       ...prev,
       [name]: value
     }));
-    setError(''); // Clear error when user starts typing
+    setError('');
   };
 
   const passwordStrength = getPasswordStrength(formData.password);

@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useMovies } from '../contexts/MovieContext';
 import { FaPlay, FaPlus, FaInfoCircle, FaStar, FaClock, FaCalendar } from 'react-icons/fa';
-import ReactPlayer from 'react-player';
 
 const DetailContainer = styled.div`
   min-height: 100vh;
@@ -32,7 +31,7 @@ const BackgroundImage = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: ${props => props.imageUrl ? `url(${props.imageUrl})` : 'none'};
+  background-image: ${props => props.$imageUrl ? `url(${props.$imageUrl})` : 'none'};
   background-size: cover;
   background-position: center;
   z-index: -2;
@@ -231,19 +230,7 @@ const CastCharacter = styled.p`
   font-size: 0.9rem;
 `;
 
-const TrailerSection = styled.div`
-  margin-bottom: 3rem;
-`;
 
-const TrailerContainer = styled.div`
-  position: relative;
-  width: 100%;
-  height: 0;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
-  background-color: #111;
-  border-radius: 8px;
-  overflow: hidden;
-`;
 
 const SimilarMovies = styled.div`
   margin-bottom: 3rem;
@@ -335,11 +322,11 @@ const BackButton = styled(Link)`
 
 function MovieDetail() {
   const { id } = useParams();
-  const { fetchMovieDetails } = useMovies();
+  const { fetchMovieDetails, playTrailer } = useMovies();
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showTrailer, setShowTrailer] = useState(false);
+  const [trailerLoading, setTrailerLoading] = useState(false);
 
   useEffect(() => {
     const loadMovie = async () => {
@@ -396,9 +383,7 @@ function MovieDetail() {
     );
   }
 
-  const backgroundImageUrl = movie.backdrop_path 
-    ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
-    : null;
+  const backgroundImageUrl = movie.backdrop_path || null;
 
   const formatDuration = (minutes) => {
     if (!minutes) return '';
@@ -413,14 +398,23 @@ function MovieDetail() {
     return '#e50914';
   };
 
-  const trailer = movie.videos?.results?.find(video => 
-    video.type === 'Trailer' && video.site === 'YouTube'
-  );
+  const handleTrailerClick = async () => {
+    if (!trailerLoading && movie) {
+      setTrailerLoading(true);
+      try {
+        await playTrailer(movie);
+      } catch (error) {
+        console.error('Error loading trailer:', error);
+      } finally {
+        setTrailerLoading(false);
+      }
+    }
+  };
 
   return (
     <DetailContainer>
       <HeroSection>
-        <BackgroundImage imageUrl={backgroundImageUrl} />
+        <BackgroundImage $imageUrl={backgroundImageUrl} />
         
         <Content>
           <Title
@@ -465,17 +459,20 @@ function MovieDetail() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <ActionButton className="play">
-              <FaPlay /> Play
+            <ActionButton 
+              className="play"
+              onClick={handleTrailerClick}
+              disabled={trailerLoading}
+            >
+              <FaPlay /> {trailerLoading ? 'Loading...' : 'Play'}
             </ActionButton>
-            {trailer && (
-              <ActionButton 
-                className="info"
-                onClick={() => setShowTrailer(!showTrailer)}
-              >
-                <FaInfoCircle /> Watch Trailer
-              </ActionButton>
-            )}
+            <ActionButton 
+              className="info"
+              onClick={handleTrailerClick}
+              disabled={trailerLoading}
+            >
+              <FaInfoCircle /> {trailerLoading ? 'Loading...' : 'Watch Trailer'}
+            </ActionButton>
             <ActionButton className="add">
               <FaPlus /> My List
             </ActionButton>
@@ -484,42 +481,25 @@ function MovieDetail() {
       </HeroSection>
 
       <ContentSection>
-        {showTrailer && trailer && (
-          <TrailerSection>
-            <SectionTitle>Official Trailer</SectionTitle>
-            <TrailerContainer>
-              <ReactPlayer
-                url={`https://www.youtube.com/watch?v=${trailer.key}`}
-                width="100%"
-                height="100%"
-                controls
-                style={{ position: 'absolute', top: 0, left: 0 }}
-              />
-            </TrailerContainer>
-          </TrailerSection>
-        )}
 
-        {movie.credits?.cast && movie.credits.cast.length > 0 && (
+        {movie.cast && movie.cast.length > 0 && (
           <div>
             <SectionTitle>Cast</SectionTitle>
             <CastGrid>
-              {movie.credits.cast.slice(0, 8).map((actor, index) => (
+              {movie.cast.slice(0, 8).map((actor, index) => (
                 <CastCard
-                  key={actor.id}
+                  key={index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
                   <CastImage
-                    src={actor.profile_path 
-                      ? `https://image.tmdb.org/t/p/w200${actor.profile_path}`
-                      : 'https://via.placeholder.com/200x300/333/666?text=No+Image'
-                    }
-                    alt={actor.name}
+                    src="https://via.placeholder.com/200x300/333/666?text=No+Image"
+                    alt={actor.person?.name || 'Unknown'}
                   />
                   <CastInfo>
-                    <CastName>{actor.name}</CastName>
-                    <CastCharacter>{actor.character}</CastCharacter>
+                    <CastName>{actor.person?.name || 'Unknown'}</CastName>
+                    <CastCharacter>{actor.character || 'Unknown'}</CastCharacter>
                   </CastInfo>
                 </CastCard>
               ))}
@@ -527,39 +507,7 @@ function MovieDetail() {
           </div>
         )}
 
-        {movie.similar?.results && movie.similar.results.length > 0 && (
-          <SimilarMovies>
-            <SectionTitle>More Like This</SectionTitle>
-            <MovieGrid>
-              {movie.similar.results.slice(0, 6).map((similarMovie, index) => (
-                <Link key={similarMovie.id} to={`/movie/${similarMovie.id}`}>
-                  <MovieCard
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                  >
-                    <MovieImage
-                      src={similarMovie.poster_path 
-                        ? `https://image.tmdb.org/t/p/w500${similarMovie.poster_path}`
-                        : 'https://via.placeholder.com/300x450/333/666?text=No+Image'
-                      }
-                      alt={similarMovie.title}
-                    />
-                    <MovieInfo>
-                      <MovieTitle>{similarMovie.title}</MovieTitle>
-                      <MovieMeta>
-                        <span>{similarMovie.vote_average.toFixed(1)} ★</span>
-                        {similarMovie.release_date && (
-                          <span>{new Date(similarMovie.release_date).getFullYear()}</span>
-                        )}
-                      </MovieMeta>
-                    </MovieInfo>
-                  </MovieCard>
-                </Link>
-              ))}
-            </MovieGrid>
-          </SimilarMovies>
-        )}
+        {/* Similar movies functionality removed as Trakt API doesn't provide this data easily */}
       </ContentSection>
     </DetailContainer>
   );

@@ -54,31 +54,35 @@ A modern, responsive Netflix clone built with React, featuring real movie data f
    npm install
    ```
 
-3. **Set up Firebase**
+3. **Set up Environment Variables**
+   - Create a `.env` file in the root directory
+   - Add the following environment variables:
+   ```env
+   # Firebase Configuration
+   VITE_FIREBASE_API_KEY=your_firebase_api_key_here
+   VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
+   VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
+
+   # YouTube API Key
+   VITE_YOUTUBE_API_KEY=your_youtube_api_key_here
+   ```
+
+4. **Set up Firebase**
    - Go to [Firebase Console](https://console.firebase.google.com/)
    - Create a new project
    - Enable Authentication (Email/Password)
-   - Get your Firebase config
+   - Get your Firebase config and add it to the `.env` file
 
-4. **Configure Firebase**
-   - Open `src/lib/firebase.js`
-   - Replace the placeholder values with your Firebase config:
-   ```javascript
-   const firebaseConfig = {
-     apiKey: "YOUR_FIREBASE_API_KEY",
-     authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
-     projectId: "YOUR_FIREBASE_PROJECT_ID",
-     storageBucket: "YOUR_FIREBASE_STORAGE_BUCKET",
-     messagingSenderId: "YOUR_FIREBASE_MESSAGING_SENDER_ID",
-     appId: "YOUR_FIREBASE_APP_ID"
-   };
-   ```
-
-5. **Set up TMDB API**
-   - Go to [TMDB](https://www.themoviedb.org/settings/api)
-   - Create an account and get your API key
-   - Open `src/contexts/MovieContext.jsx`
-   - Replace `YOUR_TMDB_API_KEY` with your actual API key
+5. **Set up YouTube API**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select existing one
+   - Enable YouTube Data API v3
+   - Create credentials (API Key)
+   - Add the API key to the `.env` file
 
 6. **Start the development server**
    ```bash
@@ -98,7 +102,8 @@ netflixclone/
 │   │   ├── Navbar.jsx          # Navigation component
 │   │   ├── MovieRow.jsx        # Horizontal movie list
 │   │   ├── MovieCard.jsx       # Individual movie card
-│   │   └── HeroBanner.jsx      # Featured movie banner
+│   │   ├── HeroBanner.jsx      # Featured movie banner
+│   │   └── TrailerPopup.jsx    # Trailer modal component
 │   ├── contexts/
 │   │   ├── AuthContext.jsx     # Authentication context
 │   │   └── MovieContext.jsx    # Movie data context
@@ -113,8 +118,11 @@ netflixclone/
 │   │   └── GlobalStyles.js    # Global styles
 │   ├── lib/
 │   │   └── firebase.js        # Firebase configuration
+│   ├── index.js               # Centralized imports
 │   ├── App.jsx                # Main app component
 │   └── main.jsx               # App entry point
+├── .env.example               # Environment variables template
+├── .gitignore                 # Git ignore rules
 ├── package.json
 └── README.md
 ```

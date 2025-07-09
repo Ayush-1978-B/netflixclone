@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaPlay, FaInfoCircle, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
+import { useMovies } from '../contexts/MovieContext';
 
 const BannerContainer = styled.div`
   position: relative;
@@ -29,7 +30,7 @@ const BackgroundImage = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: ${props => props.imageUrl ? `url(${props.imageUrl})` : 'none'};
+  background-image: ${props => props.$imageUrl ? `url(${props.$imageUrl})` : 'none'};
   background-size: cover;
   background-position: center;
   z-index: -1;
@@ -211,12 +212,12 @@ const MaturityRating = styled.div`
 
 function HeroBanner({ movie }) {
   const [isMuted, setIsMuted] = useState(false);
+  const [trailerLoading, setTrailerLoading] = useState(false);
+  const { playTrailer } = useMovies();
   
   if (!movie) return null;
 
-  const backgroundImageUrl = movie.backdrop_path 
-    ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
-    : null;
+  const backgroundImageUrl = movie.backdrop_path || null;
 
   const formatDuration = (minutes) => {
     if (!minutes) return '';
@@ -232,14 +233,25 @@ function HeroBanner({ movie }) {
   };
 
   const getMaturityRating = () => {
-    // This would typically come from the movie data
-    // For now, we'll use a placeholder
     return 'TV-MA';
+  };
+
+  const handleTrailerClick = async () => {
+    if (!trailerLoading && movie) {
+      setTrailerLoading(true);
+      try {
+        await playTrailer(movie);
+      } catch (error) {
+        console.error('Error loading trailer:', error);
+      } finally {
+        setTrailerLoading(false);
+      }
+    }
   };
 
   return (
     <BannerContainer>
-      <BackgroundImage imageUrl={backgroundImageUrl} />
+      <BackgroundImage $imageUrl={backgroundImageUrl} />
       
       <MaturityRating>{getMaturityRating()}</MaturityRating>
       
@@ -291,8 +303,12 @@ function HeroBanner({ movie }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <BannerButton className="play">
-            <FaPlay /> Play
+          <BannerButton 
+            className="play"
+            onClick={handleTrailerClick}
+            disabled={trailerLoading}
+          >
+            <FaPlay /> {trailerLoading ? 'Loading...' : 'Play'}
           </BannerButton>
           <Link to={`/movie/${movie.id}`}>
             <BannerButton className="info">

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaPlay, FaPlus, FaInfoCircle, FaCheck } from 'react-icons/fa';
+import { useMovies } from '../contexts/MovieContext';
 
 const CardContainer = styled(motion.div)`
   position: relative;
@@ -213,16 +214,30 @@ const AddToListButton = styled.button`
 `;
 
 function MovieCard({ movie, isSearchResult = false }) {
+  const { playTrailer } = useMovies();
   const [isInList, setIsInList] = useState(false);
+  const [trailerLoading, setTrailerLoading] = useState(false);
   
-  const imageUrl = movie.poster_path 
-    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-    : null;
+  const imageUrl = movie.poster_path || null;
 
   const handleAddToList = (e) => {
     e.stopPropagation();
     setIsInList(!isInList);
-    // Here you would typically add/remove from user's list in Firebase
+
+  };
+
+  const handleTrailerClick = async (e) => {
+    e.stopPropagation();
+    if (!trailerLoading) {
+      setTrailerLoading(true);
+      try {
+        await playTrailer(movie);
+      } catch (error) {
+        console.error('Error loading trailer:', error);
+      } finally {
+        setTrailerLoading(false);
+      }
+    }
   };
 
   const formatDuration = (minutes) => {
@@ -247,13 +262,14 @@ function MovieCard({ movie, isSearchResult = false }) {
           <MovieImage 
             src={imageUrl} 
             alt={movie.title}
-            onError={(e) => {
-              e.target.style.display = 'none';
-              e.target.nextSibling.style.display = 'flex';
-            }}
           />
         ) : (
-          <PlaceholderImage>🎬</PlaceholderImage>
+          <PlaceholderImage>
+            <div style={{ textAlign: 'center', padding: '1rem' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎬</div>
+              <div style={{ fontSize: '0.9rem', color: '#b3b3b3' }}>{movie.title}</div>
+            </div>
+          </PlaceholderImage>
         )}
       </Link>
 
@@ -271,7 +287,12 @@ function MovieCard({ movie, isSearchResult = false }) {
         transition={{ duration: 0.3 }}
       >
         <TopActions>
-          <ActionButton className="play" title="Play">
+          <ActionButton 
+            className="play" 
+            title="Play Trailer"
+            onClick={handleTrailerClick}
+            disabled={trailerLoading}
+          >
             <FaPlay />
           </ActionButton>
           <ActionButton title="More info">
@@ -303,11 +324,19 @@ function MovieCard({ movie, isSearchResult = false }) {
         </MovieInfo>
 
         <BottomActions>
-          <BottomButton className="play">
-            <FaPlay /> Play
+          <BottomButton 
+            className="play"
+            onClick={handleTrailerClick}
+            disabled={trailerLoading}
+          >
+            <FaPlay /> {trailerLoading ? 'Loading...' : 'Play'}
           </BottomButton>
-          <BottomButton className="info">
-            <FaInfoCircle /> More Info
+          <BottomButton 
+            className="info"
+            onClick={handleTrailerClick}
+            disabled={trailerLoading}
+          >
+            <FaInfoCircle /> {trailerLoading ? 'Loading...' : 'Trailer'}
           </BottomButton>
         </BottomActions>
       </HoverOverlay>

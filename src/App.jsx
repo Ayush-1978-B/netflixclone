@@ -9,7 +9,21 @@ import MovieDetail from './pages/MovieDetail';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile';
+import TrailerPopup from './components/TrailerPopup';
 import { GlobalStyles } from './styles/GlobalStyles';
+import { useMovies } from './contexts/MovieContext';
+
+const TrailerPopupWrapper = () => {
+  const { showTrailerPopup, selectedTrailer, closeTrailerPopup } = useMovies();
+  
+  return (
+    <TrailerPopup
+      isOpen={showTrailerPopup}
+      trailer={selectedTrailer}
+      onClose={closeTrailerPopup}
+    />
+  );
+};
 
 function App() {
   return (
@@ -27,6 +41,7 @@ function App() {
               <Route path="/signup" element={<Signup />} />
               <Route path="/profile" element={<Profile />} />
             </Routes>
+            <TrailerPopupWrapper />
             <div style={{
               position: 'fixed',
               bottom: 0,

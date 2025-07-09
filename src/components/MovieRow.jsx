@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FaChevronLeft, FaChevronRight, FaPlay, FaInfoCircle } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import MovieCard from './MovieCard';
 
 const RowContainer = styled.div`
@@ -87,7 +87,7 @@ function MovieRow({ title, movies, isSearchResults = false }) {
   const [isHovered, setIsHovered] = useState(false);
   const rowRef = useRef(null);
   
-  const itemsPerView = Math.floor((window.innerWidth - 80) / 220); // 220px per movie + gap
+      const itemsPerView = Math.floor((window.innerWidth - 80) / 220);
   const maxIndex = Math.max(0, movies.length - itemsPerView);
 
   const scrollLeft = () => {

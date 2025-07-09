@@ -11,7 +11,7 @@ const Nav = styled.nav`
   right: 0;
   z-index: 1000;
   transition: background-color 0.3s ease;
-  background-color: ${props => props.scrolled ? '#000' : 'transparent'};
+  background-color: ${props => props.$scrolled ? '#000' : 'transparent'};
   padding: 1rem 4%;
 `;
 
@@ -74,8 +74,8 @@ const SearchInput = styled.input`
   color: #fff;
   padding: 0.5rem 1rem;
   border-radius: 4px;
-  width: ${props => props.isOpen ? '200px' : '0'};
-  opacity: ${props => props.isOpen ? '1' : '0'};
+  width: ${props => props.$isOpen ? '200px' : '0'};
+  opacity: ${props => props.$isOpen ? '1' : '0'};
   transition: all 0.3s ease;
   
   &::placeholder {
@@ -121,7 +121,7 @@ const DropdownMenu = styled.div`
   border-radius: 4px;
   padding: 0.5rem 0;
   min-width: 150px;
-  display: ${props => props.isOpen ? 'block' : 'none'};
+  display: ${props => props.$isOpen ? 'block' : 'none'};
 `;
 
 const DropdownItem = styled(Link)`
@@ -207,7 +207,7 @@ function Navbar() {
   const isHomePage = location.pathname === '/';
 
   return (
-    <Nav scrolled={scrolled || !isHomePage}>
+    <Nav $scrolled={scrolled || !isHomePage}>
       <NavContainer>
         <NavLeft>
           <Logo to="/">NETFLIX</Logo>
@@ -231,7 +231,7 @@ function Navbar() {
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  isOpen={searchOpen}
+                  $isOpen={searchOpen}
                 />
                 <SearchButton onClick={() => setSearchOpen(!searchOpen)}>
                   <FaSearch />
@@ -243,7 +243,7 @@ function Navbar() {
                 <UserAvatar>
                   {currentUser.displayName ? currentUser.displayName[0].toUpperCase() : 'U'}
                 </UserAvatar>
-                <DropdownMenu isOpen={dropdownOpen}>
+                <DropdownMenu $isOpen={dropdownOpen}>
                   <DropdownItem to="/profile">Profile</DropdownItem>
                   <DropdownItem to="/browse">Account</DropdownItem>
                   <DropdownItem to="/browse">Help Center</DropdownItem>

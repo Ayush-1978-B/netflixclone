@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import MovieRow from '../components/MovieRow';
 import HeroBanner from '../components/HeroBanner';
-import { FaPlay, FaInfoCircle } from 'react-icons/fa';
+
 
 const BrowseContainer = styled.div`
   min-height: 100vh;

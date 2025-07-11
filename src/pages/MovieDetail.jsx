@@ -413,9 +413,9 @@ function MovieDetail() {
       try {
         await playTrailer(movie);
       } catch (error) {
-        console.error('Error loading trailer:', error);
+          console.error('Error loading trailer:', error);
       } finally {
-        setTrailerLoading(false);
+          setTrailerLoading(false);
       }
     }
   };
@@ -475,13 +475,13 @@ function MovieDetail() {
             >
               <FaPlay /> {trailerLoading ? 'Loading...' : 'Play'}
             </ActionButton>
-            <ActionButton 
-              className="info"
+              <ActionButton 
+                className="info"
               onClick={handleTrailerClick}
               disabled={trailerLoading}
-            >
+              >
               <FaInfoCircle /> {trailerLoading ? 'Loading...' : 'Watch Trailer'}
-            </ActionButton>
+              </ActionButton>
             <ActionButton className="add">
               <FaPlus /> My List
             </ActionButton>

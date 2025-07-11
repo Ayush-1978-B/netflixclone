@@ -19,38 +19,41 @@ const SignupContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  padding-top: 80px; /* Account for fixed navbar */
+  padding-bottom: 50px; /* Account for bottom marquee */
+  box-sizing: border-box;
 `;
 
 const SignupCard = styled(motion.div)`
   background-color: rgba(0, 0, 0, 0.75);
   border-radius: 4px;
-  padding: 3rem;
+  padding: 2.5rem; /* Reduced from 3rem */
   width: 100%;
-  max-width: 450px;
+  max-width: 400px; /* Reduced from 450px */
   box-sizing: border-box;
 `;
 
 const Logo = styled(Link)`
   display: block;
   color: #e50914;
-  font-size: 2rem;
+  font-size: 1.8rem; /* Reduced from 2rem */
   font-weight: bold;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem; /* Reduced from 2rem */
   text-decoration: none;
 `;
 
 const Title = styled.h1`
   color: #fff;
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
+  font-size: 1.8rem; /* Reduced from 2rem */
+  margin-bottom: 1.2rem; /* Reduced from 1.5rem */
   text-align: center;
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.8rem; /* Reduced from 1rem */
 `;
 
 const InputGroup = styled.div`
@@ -143,7 +146,7 @@ const SignupButton = styled.button`
 const Divider = styled.div`
   display: flex;
   align-items: center;
-  margin: 1.5rem 0;
+  margin: 1.2rem 0; /* Reduced from 1.5rem */
   color: #8c8c8c;
   
   &::before,
@@ -162,7 +165,7 @@ const Divider = styled.div`
 
 const LoginLink = styled.div`
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 1.5rem; /* Reduced from 2rem */
   color: #8c8c8c;
   
   a {

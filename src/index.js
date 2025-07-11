@@ -59,8 +59,5 @@ export { default as Profile } from './pages/Profile';
 // Styles
 export { GlobalStyles } from './styles/GlobalStyles';
 
-// Firebase
-export { auth } from './lib/firebase';
-
 // Hooks
 export { useDocumentTitle, useCustomTitle } from './hooks/useDocumentTitle'; 

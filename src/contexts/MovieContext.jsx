@@ -15,7 +15,7 @@ export const MovieProvider = ({ children }) => {
   const [selectedTrailer, setSelectedTrailer] = useState(null);
   const [showTrailerPopup, setShowTrailerPopup] = useState(false);
 
-  const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY || 'placeholder-youtube-key'; 
+  const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY; 
   const YOUTUBE_BASE_URL = 'https://www.googleapis.com/youtube/v3';
 
 
